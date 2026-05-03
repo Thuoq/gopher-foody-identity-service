@@ -14,12 +14,12 @@ type TokenManager interface {
 }
 
 type manager struct {
-	config *config.JWTConfig
+	config *config.Config
 }
 
-func NewManager(jwtConfig *config.JWTConfig) TokenManager {
+func NewManager(config *config.Config) TokenManager {
 	return &manager{
-		config: jwtConfig,
+		config: config,
 	}
 }
 
@@ -34,7 +34,7 @@ func (m *manager) GenerateAccessToken(publicUserId string, sessionID string) (st
 		PublicUserId: publicUserId,
 		SessionID:    sessionID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(m.config.AccessTTL)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(m.config.JWT.AccessTTL)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			ID:        uuid.New().String(),
@@ -42,7 +42,7 @@ func (m *manager) GenerateAccessToken(publicUserId string, sessionID string) (st
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(m.config.AccessSecret))
+	return token.SignedString([]byte(m.config.JWT.AccessSecret))
 }
 
 func (m *manager) GenerateRefreshToken(publicUserId string, sessionID string) (string, error) {
@@ -50,7 +50,7 @@ func (m *manager) GenerateRefreshToken(publicUserId string, sessionID string) (s
 		PublicUserId: publicUserId,
 		SessionID:    sessionID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(m.config.RefreshTTL)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(m.config.JWT.RefreshTTL)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			ID:        uuid.New().String(),
@@ -58,5 +58,5 @@ func (m *manager) GenerateRefreshToken(publicUserId string, sessionID string) (s
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(m.config.RefreshSecret))
+	return token.SignedString([]byte(m.config.JWT.RefreshSecret))
 }

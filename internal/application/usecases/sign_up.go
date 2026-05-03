@@ -3,6 +3,7 @@ package usecases
 import (
 	"context"
 	"errors"
+	"gopher-identity-service/internal/config"
 	constantUser "gopher-identity-service/internal/core/domain/constant/user"
 	"gopher-identity-service/pkg/jwt"
 	"time"
@@ -22,6 +23,7 @@ var (
 type signUpUseCase struct {
 	userRepo   ports.UserRepository
 	jwtManager jwt.TokenManager
+	cfg        *config.Config
 }
 
 func NewSignUpUseCase(
@@ -90,7 +92,7 @@ func (uc *signUpUseCase) SignUp(ctx context.Context, input ports.SignUpUseCaseIn
 		RefreshTokenHash: hashedRefreshToken,
 		IpAddress:        input.IpAddress,
 		DeviceInfo:       input.DeviceInfo,
-		ExpiresAt:        time.Now().Add(7 * 24 * time.Hour), // e.g. 7 days
+		ExpiresAt:        time.Now().Add(uc.cfg.JWT.RefreshTTL),
 	}
 
 	// 7. Save both in a transaction

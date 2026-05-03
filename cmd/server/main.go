@@ -33,9 +33,6 @@ func BuildContainer() *dig.Container {
 	// Core dependencies
 	container.Provide(config.LoadConfig)
 	container.Provide(logger.NewLogger)
-	container.Provide(func(cfg *config.Config) *config.JWTConfig {
-		return &cfg.JWT
-	})
 
 	// Infrastructure
 	container.Provide(database.NewPostgresDB)
