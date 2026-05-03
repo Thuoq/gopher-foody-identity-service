@@ -8,5 +8,11 @@ import (
 
 type UserRepository interface {
 	GetByID(ctx context.Context, id int64) (*domain.User, error)
-	// Add other methods like Create, GetByEmail etc. as needed
+	GetByEmail(ctx context.Context, email string) (*domain.User, error)
+
+	// New methods for Sign Up
+	CheckEmailExists(ctx context.Context, email string) (bool, error)
+	CheckUsernameExists(ctx context.Context, username string) (bool, error)
+	CreateUserWithSession(ctx context.Context, user *domain.User, session *domain.UserSession) error
 }
+

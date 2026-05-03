@@ -1,0 +1,17 @@
+CREATE TABLE "user_sessions" (
+    "id" bigserial,
+    "user_id" bigint NOT NULL,
+    "session_id" text NOT NULL,
+    "refresh_token_hash" text NOT NULL,
+    "token_history" JSONB,
+    "device_info" varchar(255),
+    "ip_address" varchar(255),
+    "expires_at" timestamptz,
+    "created_at" timestamptz,
+    "updated_at" timestamptz,
+    PRIMARY KEY ("id"),
+    CONSTRAINT "fk_user_sessions_user" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_user_sessions_session_id" ON "user_sessions" ("session_id");
+CREATE INDEX IF NOT EXISTS "idx_user_sessions_user_id" ON "user_sessions" ("user_id");

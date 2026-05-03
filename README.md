@@ -100,3 +100,14 @@ Lệnh trên sẽ sinh ra 2 file trong thư mục `migrations/`:
 - `000002_add_phone_number.down.sql`: Nơi bạn viết lệnh `ALTER TABLE users DROP COLUMN phone;`
 
 Sau khi tạo xong file SQL, bạn chỉ cần chạy lại project (`go run cmd/server/main.go`), ứng dụng sẽ tự động cập nhật database cho bạn.
+
+### 💡 Mẹo: Sinh file SQL nhanh bằng GORM
+Việc viết SQL thuần (nhất là lệnh tạo bảng) có thể hơi mất thời gian. Một mẹo (trick) phổ biến của các Gopher là lợi dụng lại chính `AutoMigrate` để nó tự sinh ra câu lệnh SQL chuẩn xác cho mình:
+
+1. Trong code, tạm thời thêm dòng này vào chỗ nào đó chạy được lúc khởi động (ví dụ trong `postgres.go`):
+   ```go
+   db.Debug().AutoMigrate(&domain.UserSession{}) 
+   ```
+2. Chạy ứng dụng (`go run main.go`). GORM với cờ `.Debug()` sẽ in nguyên si câu lệnh `CREATE TABLE` hoặc `ALTER TABLE` ra màn hình console.
+3. Copy đoạn SQL đó paste vào file `*.up.sql`. Tự nhẩm lệnh ngược lại paste vào `*.down.sql`.
+4. **Quan trọng:** Xoá dòng `db.Debug().AutoMigrate()` đi để tránh rủi ro trên Production.
