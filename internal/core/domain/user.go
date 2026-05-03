@@ -6,10 +6,11 @@ import (
 
 type User struct {
 	ID        int64     `json:"id" gorm:"primaryKey"`
-	Username  string    `json:"username" gorm:"uniqueIndex;not null"`
-	Email     string    `json:"email" gorm:"uniqueIndex;not null"`
-	Password  string    `json:"-" gorm:"not null"` // Excluded from JSON by default
-	Role      string    `json:"role" gorm:"default:'user'"`
+	PublicId  string    `gorm:"type:varchar(255);uniqueIndex;not null"`
+	Username  string    `gorm:"type:varchar(255);not null"`
+	Email     string    `gorm:"type:varchar(255);uniqueIndex;not null"`
+	Password  string    `gorm:"type:varchar(255);not null"`
+	Role      string    `json:"role" gorm:"type:varchar(255);default:'user'"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

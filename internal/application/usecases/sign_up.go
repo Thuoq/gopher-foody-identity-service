@@ -3,13 +3,15 @@ package usecases
 import (
 	"context"
 	"errors"
+	constantUser "gopher-identity-service/internal/core/domain/constant/user"
+	"gopher-identity-service/pkg/jwt"
 	"time"
-
-	"github.com/alexedwards/argon2id"
-	"github.com/google/uuid"
 
 	"gopher-identity-service/internal/core/domain"
 	"gopher-identity-service/internal/core/ports"
+
+	"github.com/alexedwards/argon2id"
+	"github.com/google/uuid"
 )
 
 var (
@@ -17,33 +19,22 @@ var (
 	ErrUsernameExists = errors.New("username already exists")
 )
 
-type SignUpUseCase struct {
-	userRepo ports.UserRepository
+type signUpUseCase struct {
+	userRepo   ports.UserRepository
+	jwtManager jwt.TokenManager
 }
 
 func NewSignUpUseCase(
 	userRepo ports.UserRepository,
-) SignUpUseCase {
-	return SignUpUseCase{
-		userRepo: userRepo,
+	jwtManager jwt.TokenManager,
+) ports.ISignUpUseCase {
+	return &signUpUseCase{
+		userRepo:   userRepo,
+		jwtManager: jwtManager,
 	}
 }
 
-type SignUpUseCaseInput struct {
-	Email      string
-	Username   string
-	Password   string
-	IpAddress  string
-	DeviceInfo string
-}
-
-type SignUpUseCaseOutput struct {
-	User         *domain.User
-	SessionID    string
-	RefreshToken string
-}
-
-func (uc *SignUpUseCase) SignUp(ctx context.Context, input SignUpUseCaseInput) (*SignUpUseCaseOutput, error) {
+func (uc *signUpUseCase) SignUp(ctx context.Context, input ports.SignUpUseCaseInput) (*ports.SignUpUseCaseOutput, error) {
 	// 1. Check if email exists
 	emailExists, err := uc.userRepo.CheckEmailExists(ctx, input.Email)
 	if err != nil {
@@ -73,13 +64,20 @@ func (uc *SignUpUseCase) SignUp(ctx context.Context, input SignUpUseCaseInput) (
 		Email:    input.Email,
 		Username: input.Username,
 		Password: hashedPassword,
-		Role:     "user",
+		Role:     string(constantUser.RoleUser),
+		PublicId: uuid.New().String(),
 	}
 
 	// 5. Generate Session and Refresh Token
 	sessionID := uuid.New().String()
-	refreshToken := uuid.New().String() + "-" + uuid.New().String()
-
+	accessToken, err := uc.jwtManager.GenerateAccessToken(user.PublicId, sessionID)
+	if err != nil {
+		return nil, err
+	}
+	refreshToken, err := uc.jwtManager.GenerateRefreshToken(user.PublicId, sessionID)
+	if err != nil {
+		return nil, err
+	}
 	// Hash refresh token for storage
 	hashedRefreshToken, err := argon2id.CreateHash(refreshToken, argon2id.DefaultParams)
 	if err != nil {
@@ -101,9 +99,10 @@ func (uc *SignUpUseCase) SignUp(ctx context.Context, input SignUpUseCaseInput) (
 	}
 
 	// 8. Return success
-	return &SignUpUseCaseOutput{
+	return &ports.SignUpUseCaseOutput{
 		User:         &user,
 		SessionID:    sessionID,
 		RefreshToken: refreshToken,
+		AccessToken:  accessToken,
 	}, nil
 }

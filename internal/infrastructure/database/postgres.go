@@ -30,7 +30,11 @@ func NewPostgresDB(cfg *config.Config, logger *zap.Logger) (*gorm.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
-
+	//db = db.Session(&gorm.Session{
+	//	DryRun: true,
+	//})
+	//
+	//db.AutoMigrate(&domain.User{}, &domain.UserSession{})
 	// Extract the standard *sql.DB from GORM to use with golang-migrate
 	sqlDB, err := db.DB()
 	if err != nil {

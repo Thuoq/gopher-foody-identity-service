@@ -1,4 +1,4 @@
-package request
+package dto
 
 type SignUpRequest struct {
 	Username string `json:"username" validate:"required,min=8"`

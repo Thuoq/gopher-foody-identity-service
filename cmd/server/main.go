@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"gopher-identity-service/internal/presentation/http/handlers/auth"
+	"gopher-identity-service/pkg/jwt"
 	"net"
 	"net/http"
 	"os"
@@ -31,17 +33,28 @@ func BuildContainer() *dig.Container {
 	// Core dependencies
 	container.Provide(config.LoadConfig)
 	container.Provide(logger.NewLogger)
+	container.Provide(func(cfg *config.Config) *config.JWTConfig {
+		return &cfg.JWT
+	})
 
 	// Infrastructure
 	container.Provide(database.NewPostgresDB)
 	container.Provide(repositories.NewUserPostgresRepository)
 
+	// Pkg
+	container.Provide(jwt.NewManager)
+
 	// Application
 	container.Provide(usecases.NewSSOUseCase)
+	container.Provide(usecases.NewSignUpUseCase)
 
 	// Presentation
 	container.Provide(user.NewGetProfileHandler)
 	container.Provide(user.NewRouter)
+
+	container.Provide(auth.NewSignUpHandler)
+	container.Provide(auth.NewRouter)
+
 	container.Provide(httpRouter.NewRouter)
 	container.Provide(grpcServer.NewGRPCServer)
 

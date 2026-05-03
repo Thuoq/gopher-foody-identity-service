@@ -1,6 +1,7 @@
 package http
 
 import (
+	"gopher-identity-service/internal/presentation/http/handlers/auth"
 	"reflect"
 	"strings"
 
@@ -13,7 +14,7 @@ import (
 	"gopher-identity-service/internal/presentation/http/handlers/user"
 )
 
-func NewRouter(cfg *config.Config, logger *zap.Logger, userRouter *user.Router) *gin.Engine {
+func NewRouter(cfg *config.Config, logger *zap.Logger, userRouter *user.Router, authRouter *auth.Router) *gin.Engine {
 	if cfg.App.Env == "production" {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -43,6 +44,7 @@ func NewRouter(cfg *config.Config, logger *zap.Logger, userRouter *user.Router) 
 
 	api := r.Group("/api/v1")
 	userRouter.Register(api)
+	authRouter.Register(api)
 
 	return r
 }

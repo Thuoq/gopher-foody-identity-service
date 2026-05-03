@@ -1,6 +1,8 @@
 package config
 
 import (
+	"time"
+
 	"github.com/spf13/viper"
 )
 
@@ -8,6 +10,7 @@ type Config struct {
 	App      AppConfig      `mapstructure:",squash"`
 	Database DatabaseConfig `mapstructure:",squash"`
 	Logger   LoggerConfig   `mapstructure:",squash"`
+	JWT      JWTConfig      `mapstructure:",squash"`
 }
 
 type AppConfig struct {
@@ -24,6 +27,15 @@ type DatabaseConfig struct {
 	User     string `mapstructure:"database_user"`
 	Password string `mapstructure:"database_password"`
 	DBName   string `mapstructure:"database_dbname"`
+}
+
+type JWTConfig struct {
+	// FOR AUTHENTICATION
+	AccessSecret  string        `mapstructure:"jwt_access_secret"`
+	RefreshSecret string        `mapstructure:"jwt_refresh_secret"`
+	AccessTTL     time.Duration `mapstructure:"jwt_access_ttl"`
+	RefreshTTL    time.Duration `mapstructure:"jwt_refresh_ttl"`
+	// FOR ANOTHER STUFF
 }
 
 type LoggerConfig struct {

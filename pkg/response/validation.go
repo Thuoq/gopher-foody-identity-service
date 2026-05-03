@@ -8,8 +8,7 @@ import (
 
 // ParseValidationErrors converts validation errors into a slice of FieldError
 func ParseValidationErrors(err error) []FieldError {
-	var validationErrs validator.ValidationErrors
-	if errors.As(err, &validationErrs) {
+	if validationErrs, ok := errors.AsType[validator.ValidationErrors](err); ok {
 		var fieldErrors []FieldError
 		for _, e := range validationErrs {
 			fieldErrors = append(fieldErrors, FieldError{

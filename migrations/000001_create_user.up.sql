@@ -1,0 +1,3 @@
+CREATE TABLE "users" ("id" bigserial,"public_id" varchar(255) NOT NULL,"username" varchar(255) NOT NULL,"email" varchar(255) NOT NULL,"password" varchar(255) NOT NULL,"role" varchar(255) DEFAULT 'user',"created_at" timestamptz,"updated_at" timestamptz,PRIMARY KEY ("id"));
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_users_email" ON "users" ("email");
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_users_public_id" ON "users" ("public_id");
