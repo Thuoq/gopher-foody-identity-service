@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"gopher-identity-service/internal/presentation/http/middleware"
 	"gopher-identity-service/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
@@ -32,12 +33,13 @@ func NewRouter(
 
 func (r *Router) Register(api *gin.RouterGroup) {
 	authGroup := api.Group("/auth")
+	authGroup.Use(middleware.GatewayAuth()) // Nhận diện user từ Gateway
 	{
 		authGroup.POST("/sign-up", r.signUpHandler.Handle)
 		authGroup.POST("/sign-in", r.signInHandler.Handle)
 		authGroup.POST("/refresh", r.refreshTokenHandler.Handle)
 
-		// Protected routes
+		// Protected routes (Xác thực đã được thực hiện tại Gateway)
 		authGroup.POST("/logout", r.logoutHandler.Handle)
 	}
 }
