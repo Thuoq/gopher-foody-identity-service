@@ -3,6 +3,7 @@ package usecases
 import (
 	"context"
 	"errors"
+	"fmt"
 	"gopher-identity-service/internal/config"
 	constantUser "gopher-identity-service/internal/core/domain/constant/user"
 	"gopher-identity-service/pkg/jwt"
@@ -29,10 +30,12 @@ type signUpUseCase struct {
 func NewSignUpUseCase(
 	userRepo ports.UserRepository,
 	jwtManager jwt.TokenManager,
+	cfg *config.Config,
 ) ports.ISignUpUseCase {
 	return &signUpUseCase{
 		userRepo:   userRepo,
 		jwtManager: jwtManager,
+		cfg:        cfg,
 	}
 }
 
@@ -87,6 +90,7 @@ func (uc *signUpUseCase) SignUp(ctx context.Context, input ports.SignUpUseCaseIn
 	}
 
 	// 6. Create UserSession domain model
+	fmt.Println(":::uc.cfg.JWT.RefreshTTL", uc.cfg.JWT.RefreshTTL)
 	session := domain.UserSession{
 		SessionId:        sessionID,
 		RefreshTokenHash: hashedRefreshToken,
