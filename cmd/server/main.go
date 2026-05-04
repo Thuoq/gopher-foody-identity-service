@@ -37,6 +37,7 @@ func BuildContainer() *dig.Container {
 	// Infrastructure
 	container.Provide(database.NewPostgresDB)
 	container.Provide(repositories.NewUserPostgresRepository)
+	container.Provide(repositories.NewUserSessionPostgresRepository)
 
 	// Pkg
 	container.Provide(jwt.NewManager)
@@ -44,12 +45,14 @@ func BuildContainer() *dig.Container {
 	// Application
 	container.Provide(usecases.NewSSOUseCase)
 	container.Provide(usecases.NewSignUpUseCase)
+	container.Provide(usecases.NewSignInUseCase)
 
 	// Presentation
 	container.Provide(user.NewGetProfileHandler)
 	container.Provide(user.NewRouter)
 
 	container.Provide(auth.NewSignUpHandler)
+	container.Provide(auth.NewSignInHandler)
 	container.Provide(auth.NewRouter)
 
 	container.Provide(httpRouter.NewRouter)

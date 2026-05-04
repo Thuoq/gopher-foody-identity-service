@@ -6,17 +6,20 @@ import (
 
 type Router struct {
 	signUpHandler *SignUpHandler
+	signInHandler *SignInHandler
 }
 
-func NewRouter(signUpHandler *SignUpHandler) *Router {
+func NewRouter(signUpHandler *SignUpHandler, signInHandler *SignInHandler) *Router {
 	return &Router{
 		signUpHandler: signUpHandler,
+		signInHandler: signInHandler,
 	}
 }
 
 func (r *Router) Register(api *gin.RouterGroup) {
-	userGroup := api.Group("/auth")
+	authGroup := api.Group("/auth")
 	{
-		userGroup.GET("/signUp", r.signUpHandler.Handle)
+		authGroup.POST("/sign-up", r.signUpHandler.Handle)
+		authGroup.POST("/sign-in", r.signInHandler.Handle)
 	}
 }
