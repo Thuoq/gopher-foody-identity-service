@@ -46,6 +46,7 @@ func BuildContainer() *dig.Container {
 	container.Provide(usecases.NewSSOUseCase)
 	container.Provide(usecases.NewSignUpUseCase)
 	container.Provide(usecases.NewSignInUseCase)
+	container.Provide(usecases.NewRefreshTokenUseCase)
 
 	// Presentation
 	container.Provide(user.NewGetProfileHandler)
@@ -53,6 +54,7 @@ func BuildContainer() *dig.Container {
 
 	container.Provide(auth.NewSignUpHandler)
 	container.Provide(auth.NewSignInHandler)
+	container.Provide(auth.NewRefreshTokenHandler)
 	container.Provide(auth.NewRouter)
 
 	container.Provide(httpRouter.NewRouter)

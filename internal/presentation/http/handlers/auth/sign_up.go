@@ -66,13 +66,10 @@ func (h *SignUpHandler) Handle(c *gin.Context) {
 		return
 	}
 
-	secureCookie := h.cfg.App.Env != "development"
-	// Set cookies
-	// httpOnly, secure, domain, path, maxAge
-	c.SetCookie("access_token", out.AccessToken, int(h.cfg.JWT.AccessTTL.Seconds()), "/", "", secureCookie, true)
-	c.SetCookie("refresh_token", out.RefreshToken, int(h.cfg.JWT.RefreshTTL.Seconds()), "/", "", secureCookie, true)
-
+	// Returns tokens directly in JSON as requested
 	response.Success(c, http.StatusCreated, gin.H{
-		"message": "user created successfully",
+		"message":       "user created successfully",
+		"access_token":  out.AccessToken,
+		"refresh_token": out.RefreshToken,
 	})
 }

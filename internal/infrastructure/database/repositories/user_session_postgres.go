@@ -46,3 +46,21 @@ func (r *userSessionRepository) DeleteOldestSession(ctx context.Context, userID 
 func (r *userSessionRepository) CreateUserSession(ctx context.Context, session *domain.UserSession) error {
 	return r.db.WithContext(ctx).Create(session).Error
 }
+
+func (r *userSessionRepository) GetBySessionID(ctx context.Context, sessionID string) (*domain.UserSession, error) {
+	var session domain.UserSession
+	err := r.db.WithContext(ctx).Where("session_id = ?", sessionID).First(&session).Error
+	if err != nil {
+		return nil, err
+	}
+	return &session, nil
+}
+
+func (r *userSessionRepository) UpdateUserSession(ctx context.Context, session *domain.UserSession) error {
+	return r.db.WithContext(ctx).Save(session).Error
+}
+
+func (r *userSessionRepository) DeleteBySessionID(ctx context.Context, sessionID string) error {
+	return r.db.WithContext(ctx).Where("session_id = ?", sessionID).Delete(&domain.UserSession{}).Error
+}
+
