@@ -3,7 +3,7 @@ APP_NAME=gopher-identity
 MIGRATIONS_PATH=./migrations
 
 # dùng host.docker.internal cho Mac
-DB_URL?=postgres://postgres:thuong123@host.docker.internal:5432/foody_dev_db?sslmode=disable
+DB_URL?=postgres://postgres:thuong123@host.docker.internal:5432/foody_identity_dev_db?sslmode=disable
 
 # image migrate
 MIGRATE_IMAGE=migrate/migrate
