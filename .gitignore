@@ -18,6 +18,7 @@
 go.work
 go.work.sum
 
+tmp
 # Env files
 .env
 
