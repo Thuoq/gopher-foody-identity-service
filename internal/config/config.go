@@ -14,11 +14,12 @@ type Config struct {
 }
 
 type AppConfig struct {
-	Name      string `mapstructure:"app_name"`
-	Env       string `mapstructure:"app_env"`
-	HTTPPort  int    `mapstructure:"app_http_port"`
-	GRPCPort  int    `mapstructure:"app_grpc_port"`
-	SecretKey string `mapstructure:"app_secret_key"`
+	Name              string `mapstructure:"app_name"`
+	Env               string `mapstructure:"app_env"`
+	HTTPPort          int    `mapstructure:"app_http_port"`
+	GRPCPort          int    `mapstructure:"app_grpc_port"`
+	SecretKey         string `mapstructure:"app_secret_key"`
+	MaxDevicesPerUser int    `mapstructure:"app_max_devices_per_user"`
 }
 
 type DatabaseConfig struct {

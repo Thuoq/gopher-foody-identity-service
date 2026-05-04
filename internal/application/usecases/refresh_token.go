@@ -98,11 +98,6 @@ func (uc *refreshTokenUseCase) RefreshToken(ctx context.Context, input ports.Ref
 		_ = json.Unmarshal(session.TokenHistory, &history)
 	}
 	history = append(history, session.RefreshTokenHash) // add current hash to history
-	
-	// Keep history size reasonable (e.g., last 10 hashes)
-	if len(history) > 10 {
-		history = history[len(history)-10:]
-	}
 
 	historyJSON, _ := json.Marshal(history)
 

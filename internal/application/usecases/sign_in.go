@@ -51,12 +51,12 @@ func (uc *signInUseCase) SignIn(ctx context.Context, input ports.SignInUseCaseIn
 		return nil, ErrInvalidCredentials
 	}
 
-	// 3. Enforce 3-device limit
+	// 3. Enforce MaxDevicesPerUser limit
 	count, err := uc.userSessionRepo.CountActiveSessions(ctx, user.ID)
 	if err != nil {
 		return nil, err
 	}
-	if count >= 3 {
+	if count >= int64(uc.cfg.App.MaxDevicesPerUser) {
 		err = uc.userSessionRepo.DeleteOldestSession(ctx, user.ID)
 		if err != nil {
 			return nil, err
