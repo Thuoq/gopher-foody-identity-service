@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"gopher-identity-service/internal/presentation/http/middleware"
 	"gopher-identity-service/pkg/jwt"
 
 	"github.com/gin-gonic/gin"
@@ -39,6 +38,6 @@ func (r *Router) Register(api *gin.RouterGroup) {
 		authGroup.POST("/refresh", r.refreshTokenHandler.Handle)
 
 		// Protected routes
-		authGroup.POST("/logout", middleware.AuthGuard(r.jwtManager), r.logoutHandler.Handle)
+		authGroup.POST("/logout", r.logoutHandler.Handle)
 	}
 }
