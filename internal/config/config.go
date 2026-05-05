@@ -17,7 +17,6 @@ type AppConfig struct {
 	Name              string `mapstructure:"app_name"`
 	Env               string `mapstructure:"app_env"`
 	HTTPPort          int    `mapstructure:"app_http_port"`
-	GRPCPort          int    `mapstructure:"app_grpc_port"`
 	SecretKey         string `mapstructure:"app_secret_key"`
 	MaxDevicesPerUser int    `mapstructure:"app_max_devices_per_user"`
 }
@@ -58,7 +57,6 @@ func LoadConfig() (*Config, error) {
 	viper.SetDefault("app_name", "gopher-identity-service")
 	viper.SetDefault("app_env", "development")
 	viper.SetDefault("app_http_port", 8080)
-	viper.SetDefault("app_grpc_port", 9090)
 	viper.SetDefault("logger_level", "debug")
 
 	// Database defaults to ensure they are picked up from env if file is missing

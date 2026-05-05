@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"gopher-identity-service/internal/presentation/http/handlers/auth"
 	"gopher-identity-service/pkg/jwt"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,13 +14,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/dig"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
 
 	"gopher-identity-service/internal/application/usecases"
 	"gopher-identity-service/internal/config"
 	"gopher-identity-service/internal/infrastructure/database"
 	"gopher-identity-service/internal/infrastructure/database/repositories"
-	grpcServer "gopher-identity-service/internal/presentation/grpc"
 	httpRouter "gopher-identity-service/internal/presentation/http"
 	"gopher-identity-service/internal/presentation/http/handlers/user"
 	"gopher-identity-service/pkg/logger"
@@ -60,7 +57,6 @@ func BuildContainer() *dig.Container {
 	container.Provide(auth.NewRouter)
 
 	container.Provide(httpRouter.NewRouter)
-	container.Provide(grpcServer.NewGRPCServer)
 
 	return container
 }
@@ -68,7 +64,7 @@ func BuildContainer() *dig.Container {
 func main() {
 	container := BuildContainer()
 
-	err := container.Invoke(func(cfg *config.Config, log *zap.Logger, router *gin.Engine, grpcSrv *grpc.Server) {
+	err := container.Invoke(func(cfg *config.Config, log *zap.Logger, router *gin.Engine) {
 		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 		defer stop()
 
@@ -79,21 +75,9 @@ func main() {
 		}
 
 		go func() {
-			log.Info("Starting HTTP Server", zap.Int("port", cfg.App.HTTPPort))
+			log.Info("Starting Identity HTTP Server", zap.Int("port", cfg.App.HTTPPort))
 			if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 				log.Fatal("HTTP Server failed to start", zap.Error(err))
-			}
-		}()
-
-		// Start gRPC Server
-		go func() {
-			lis, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.App.GRPCPort))
-			if err != nil {
-				log.Fatal("Failed to listen for gRPC", zap.Error(err))
-			}
-			log.Info("Starting gRPC Server", zap.Int("port", cfg.App.GRPCPort))
-			if err := grpcSrv.Serve(lis); err != nil {
-				log.Fatal("gRPC Server failed to start", zap.Error(err))
 			}
 		}()
 
@@ -108,9 +92,7 @@ func main() {
 			log.Error("HTTP Server forced to shutdown", zap.Error(err))
 		}
 
-		grpcSrv.GracefulStop()
-
-		log.Info("Servers exited gracefully")
+		log.Info("Server exited gracefully")
 	})
 
 	if err != nil {
