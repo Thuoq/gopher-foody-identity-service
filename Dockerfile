@@ -19,6 +19,9 @@ RUN go build -o main cmd/server/main.go
 # Final stage
 FROM alpine:latest
 
+# Install tzdata for timezone support
+RUN apk add --no-cache tzdata
+
 WORKDIR /app
 
 # Copy the binary from builder

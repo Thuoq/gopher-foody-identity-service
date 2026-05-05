@@ -61,6 +61,13 @@ func LoadConfig() (*Config, error) {
 	viper.SetDefault("app_grpc_port", 9090)
 	viper.SetDefault("logger_level", "debug")
 
+	// Database defaults to ensure they are picked up from env if file is missing
+	viper.SetDefault("database_host", "localhost")
+	viper.SetDefault("database_port", 5432)
+	viper.SetDefault("database_user", "postgres")
+	viper.SetDefault("database_password", "")
+	viper.SetDefault("database_dbname", "foody_db")
+
 	var cfg Config
 	if err := viper.Unmarshal(&cfg); err != nil {
 		return nil, err
