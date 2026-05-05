@@ -1,7 +1,7 @@
 package dto
 
 type SignUpRequest struct {
-	Username string `json:"username" validate:"required,min=8"`
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required,min=8"`
+	Username string `json:"username" binding:"required,min=8"`
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=8"`
 }
